@@ -1,0 +1,192 @@
+Agt_Init{
+My.X = 0
+My.Y = 0
+My.color = RGB(255,70,255)
+My.speed = 1
+}
+
+Agt_Step{
+　自動車の動き()
+   入場ゲートでの処理()
+   曲がるタイミング()
+
+   if (My.X == 28 And My.Y == 18) Then
+		Universe.出口に行った自動車 = Universe.出口に行った自動車 + 1
+		Universe.駐車場内の探索自動車数 = Universe.駐車場内の探索自動車数 - 1
+		KillAgt(My)
+	End if
+  
+}
+
+Sub 自動車の動き(){
+  Dim 直線隣接車 As AgtSet 
+	Dim 角隣接車 As AgtSet
+	Dim 次のX As Integer
+	Dim 次のY As Integer
+	Dim 駐車スペース As AgtSet
+	Dim 駐車完了スペース As AgtSet
+	Dim 駐車色 As Agt
+	Dim 前壁 As AgtSet
+
+	次のX = My.X
+	次のY = My.Y
+
+	if (My.Direction == 0) Then
+				次のX = 次のX + 1
+			elseif (My.Direction == 180) Then
+				次のX =  次のX - 1
+			elseif (My.Direction == 90) Then
+				次のY = 次のY + 1
+			elseif (My.Direction == 270) Then
+				次のY = 次のY - 1
+		End if
+
+			/* 駐車スペースに入ると止まる */
+	MakeOneAgtSetAroundPositionCell(駐車スペース, Universe.駐車場, My.X, My.Y, 0, 0, Universe.駐車場.駐車場マップ)
+	if (CountAgtSet(駐車スペース) > 0)Then
+		Universe.駐車完了台数 = Universe.駐車完了台数 + 1
+		Universe.合計探索時間 = Universe.合計探索時間 + My.探索時間
+		Universe.駐車場内の探索自動車数 = Universe.駐車場内の探索自動車数 - 1
+		KillAgt(My)
+	else
+		Forward(My.speed)
+	End if
+
+	MakeOneAgtSetAroundPositionCell(前壁, Universe.駐車場, 次のX, 次のY, 0, 0, Universe.駐車場.壁)
+	MakeOneAgtSetAroundPositionCell(直線隣接車, Universe.駐車場, 次のX, 次のY, 0, 0, Universe.駐車場.車)
+	MakeOneAgtSetAroundPositionCell(駐車完了スペース, Universe.駐車場, 次のX, 次のY, 0, 0, Universe.駐車場.駐車場マップ)
+/*駐車完了すると駐車スペースが赤になる*/
+	if (CountAgtSet(駐車完了スペース) > 0)Then
+		駐車色 = GetAgt(駐車完了スペース, 0)
+		if (駐車色.color == Color_Red) Then
+		 Turn(-90)
+		 Forward(My.speed)
+		End if
+	End if
+
+	/* 壁があれば右に曲がる */
+	if (CountAgtSet(前壁) > 0)Then
+	 Turn(-90)
+	 Forward(My.speed)
+	End if
+	/* 前後に車があれば停止する */
+	if (CountAgtSet(直線隣接車) > 0)Then
+			My.speed = 0
+	else
+	 	My.speed = 1
+	End if
+
+	/* 入口までの曲がり角に車があれば停止する */
+	MakeOneAgtSetAroundPositionCell(角隣接車, Universe.駐車場, 次のX, 次のY, 0, 1, Universe.駐車場.車)
+	if (次のX == 30 And 次のY == 0) Then
+		Turn(90) //入口のまでの最初の角を左(90)に曲がる ※ここのDirectionは90
+			if (CountAgtSet(角隣接車) > 0)Then
+				My.speed = 0
+			End if
+	Elseif (次のX == 29 And 次のY == 4) Then
+		Turn(90) //入口までの2回目の角を左(90)に曲がる ※ここのDirectionは180
+		if (CountAgtSet(角隣接車) > 0)Then
+			My.speed = 0
+		End if
+	End if
+
+}
+/* 入場ゲートに着いた車の制御 */
+Sub 入場ゲートでの処理(){
+	Dim 入口 As AgtSet
+	Dim i As Integer
+	My.入口停止時間 = 30 //停止時間が30秒
+	i = 9
+	MakeOneAgtSetAroundPositionCell(入口, Universe.駐車場, My.X, My.Y, 0, 0, Universe.駐車場.入口)
+	
+	if (CountAgtSet(入口) > 0)Then
+		My.経過時間 = My.経過時間 + 1
+		My.speed = 0
+		
+		if (Universe.駐車場内の探索自動車数 > i) Then
+			My.speed = 0
+		 else
+			if (My.経過時間 == My.入口停止時間) Then
+			/*店側希望とゲート側希望に場合分け*/
+			if(my.希望位置==0) then
+		my.店側ID=my.店側ID + 1
+		elseif(my.希望位置==1)then
+		my.ゲート側ID=my.ゲート側ID + 1
+		end if
+				My.speed = 1
+				Universe.駐車場内の探索自動車数 = Universe.駐車場内の探索自動車数 + 1
+				Universe.駐車場内の総自動車数 = Universe.駐車場内の総自動車数 + 1
+			End if
+		End if
+	End if
+
+
+	if (My.入口停止時間 < My.経過時間) Then
+		My.経過時間 = 0
+	End if
+}
+
+
+Sub 曲がるタイミング(){
+My.駐車時間 = 15
+ Dim Park As Agtset
+ Dim 駐車場 As Agt
+ MakeOneAgtSetAroundOwn(Park, 1, Universe.駐車場.駐車場マップ, False)
+ if (CountAgtSet(Park) > 0)Then
+ 駐車場 = GetAgt(Park, 0)
+
+ 
+	if (駐車場.ID >=50 And 駐車場.ID <= 71) Then
+		if (My.X == 2 And My.Y == 15) Then
+			Turn(-90)
+			My.speed = 1
+		End if
+	End if
+	if (駐車場.ID >=161 And 駐車場.ID <= 184) Then
+		if (My.X == 2 And My.Y == 15) Then
+			Turn(-90)
+			My.speed = 1
+		End if
+	End if
+
+	if (駐車場.ID >=72 And 駐車場.ID <= 93) Then
+		if (My.X == 2 And My.Y == 12) Then
+			Turn(-90)
+			My.speed = 1
+		End if
+	End if
+	if (駐車場.ID >=185 And 駐車場.ID <= 208) Then
+		if (My.X == 2 And My.Y == 12) Then
+			Turn(-90)
+			My.speed = 1
+		End if
+	End if
+
+	if (駐車場.ID >= 94 And 駐車場.ID <= 115) Then
+		if (My.X == 2 And My.Y == 9) Then
+			Turn(-90)
+			My.speed = 1
+		End if
+	End if
+	if (駐車場.ID >=209 And 駐車場.ID <= 232) Then
+		if (My.X == 2 And My.Y == 9) Then
+			Turn(-90)
+			My.speed = 1
+		End if
+	End if
+
+	if (駐車場.ID >=116 And 駐車場.ID <= 137) Then
+		if (My.X == 2 And My.Y == 6) Then
+			Turn(-90)
+			My.speed = 1
+		End if
+	End if
+	if (駐車場.ID >=233 And 駐車場.ID <= 256) Then
+		if (My.X == 2 And My.Y == 6) Then
+			Turn(-90)
+			My.speed = 1
+		End if
+
+		End if
+ End if
+}
