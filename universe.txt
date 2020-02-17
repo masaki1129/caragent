@@ -1,0 +1,43 @@
+Univ_Init{
+
+}
+
+Univ_Step_Begin{
+	自動車を生成(0,0,148+Int(Rnd()*103),Int(Rnd()*3))
+}
+
+Univ_Step_End{
+	
+}
+
+Univ_Finish{
+
+}
+
+Sub 自動車を生成 (xx As Integer, yy As Integer, 大きさ As Integer, 希望位置 As Integer){
+	Dim 新規自動車 As Agt
+	Dim 端点の自動車リスト As AgtSet
+	Dim 次の自動車リスト As AgtSet
+	Dim i As Double
+	i = 0.96
+
+	MakeOneAgtSetAroundPositionCell(次の自動車リスト, Universe.駐車場, 1, 0, 0, 0, Universe.駐車場.車)
+	if (CountAgtSet(次の自動車リスト) >= 1) Then
+	else
+
+	// 生成する座標に自動車がいないかチェック
+	MakeOneAgtSetAroundPositionCell(端点の自動車リスト, Universe.駐車場, xx, yy, 0, 0, Universe.駐車場.車)
+	if (CountAgtSet(端点の自動車リスト) == 0) Then
+		if (Rnd() > i) Then
+			// 新規に自動車を生成
+			新規自動車 = CreateAgt(Universe.駐車場.車)
+			新規自動車.X = xx
+			新規自動車.Y = yy
+			新規自動車.大きさ = 大きさ
+		  新規自動車.希望位置 = 希望位置
+		End if
+	End if
+
+	End if
+	
+}

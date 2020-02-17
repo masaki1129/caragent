@@ -1,0 +1,215 @@
+Agt_Init{
+My.color = RGB(0,70,255) //駐車スペースの初期色
+}
+
+Agt_Step{
+Dim 自動車 As AgtSet
+Dim Car As AgtSet
+	Dim 車設定 AS Agt
+	
+	/* 車が駐車スペースに入ると赤くなる動作 */
+	MakeOneAgtSetAroundPositionCell(自動車, Universe.駐車場, My.X, My.Y, 0, 0, Universe.駐車場.車)
+	if (CountAgtSet(自動車) > 0)Then
+		My.color = Color_Red
+	End if
+
+	MakeOneAgtSetAroundOwn(Car, 1, Universe.駐車場.車, False)
+	if (CountAgtSet(Car) > 0)Then
+		車設定 = GetAgt(Car,0)
+ if(車設定.希望位置 == 0) Then
+   店側希望の処理()
+   elseif (車設定.希望位置 == 1) Then
+   ゲート側希望の処理()
+   End if
+   End if
+
+}
+
+Sub 店側希望の処理(){
+	Dim Car As AgtSet
+	Dim 車設定 AS Agt
+
+	MakeOneAgtSetAroundOwn(Car, 1, Universe.駐車場.車, False)
+	if (CountAgtSet(Car) > 0)Then
+		車設定 = GetAgt(Car,0)
+		
+			if (My.店側優先ID == 車設定.店側ID) Then
+          if (My.ID >= 0 And My.ID <= 13) Then
+						車設定.Direction = -180
+					End if
+					if (My.ID >= 14 And My.ID <= 38) Then
+						車設定.Direction = -90
+					End if
+					if (My.ID >= 138 And My.ID <= 148 or My.ID >= 257 And My.ID <= 267) Then
+						車設定.Direction = -270
+					End if
+					if (My.ID >= 40 And My.ID <= 49 or My.ID >= 149 And My.ID <= 160) Then
+						車設定.Direction = -90
+					End if
+					if (My.ID >= 50 And My.ID <= 60 or My.ID >= 161 And My.ID <= 171) Then
+						車設定.Direction = -270
+					End if
+					if (My.ID >= 62 And My.ID <= 71 or My.ID >= 173 And My.ID <= 184) Then
+						車設定.Direction = -90
+					End if
+					if (My.ID >= 72 And My.ID <= 82 or My.ID >= 185 And My.ID <= 195) Then
+						車設定.Direction = -270
+					End if
+					if (My.ID >= 84 And My.ID <= 93 or My.ID >= 197 And My.ID <= 208) Then
+						車設定.Direction = -90
+					End if
+					if (My.ID >= 94 And My.ID <= 104 or My.ID >= 209 And My.ID <= 219) Then
+						車設定.Direction = -270
+					End if
+					if (My.ID >= 106 And My.ID <= 115 or My.ID >= 221 And My.ID <= 232) Then
+						車設定.Direction = -90
+					End if
+					if (My.ID >= 116 And My.ID <= 126 or My.ID >= 233 And My.ID <= 243) Then
+						車設定.Direction = -270
+					End if
+					if (My.ID >= 128 And My.ID <= 137 or My.ID >= 245 And My.ID <= 256) Then
+						車設定.Direction = -90
+					End if
+					if (My.ID == 39 or My.ID == 61 or My.ID == 83 or My.ID == 105 or My.ID == 127) Then
+						車設定.Direction = -360
+					End if
+
+				if (My.ID == 172) Then
+					if (車設定.X == 27 And 車設定.Y == 16) Then
+						車設定.Direction = -180
+					else
+						車設定.Direction = -270
+					End if
+				End if
+				if (My.ID == 196) Then
+					if (車設定.X == 27 And 車設定.Y == 13) Then
+						車設定.Direction = -180
+					else
+						車設定.Direction = -270
+					End if
+				End if
+				if (My.ID == 220) Then
+					if (車設定.X == 27 And 車設定.Y == 10) Then
+						車設定.Direction = -180
+					else
+						車設定.Direction = -270
+					End if
+				End if
+				if (My.ID == 244) Then
+					if (車設定.X == 27 And 車設定.Y == 7) Then
+						車設定.Direction = -180
+					else
+						車設定.Direction = -270
+					End if
+				End if
+				if (My.ID == 268) Then
+					if (車設定.X == 27 And 車設定.Y == 4) Then
+						車設定.Direction = -180
+					else
+						車設定.Direction = -270
+					End if
+				End if
+				車設定.speed = 0
+	 			車設定.経過時間 = 車設定.経過時間 + 1
+					if (車設定.経過時間 == 車設定.駐車時間) Then
+						車設定.speed = 1
+				End if
+				
+       End if
+				End if
+}
+
+Sub ゲート側希望の処理(){
+	Dim Car As AgtSet
+	Dim 車設定 AS Agt
+
+	MakeOneAgtSetAroundOwn(Car, 1, Universe.駐車場.車, False)
+	if (CountAgtSet(Car) > 0)Then
+	
+		車設定 = GetAgt(Car,0)
+		
+			if (My.ゲート側優先ID == 車設定.ゲート側ID) Then
+          if (My.ID >= 0 And My.ID <= 13) Then
+						車設定.Direction = -180
+					End if
+					if (My.ID >= 14 And My.ID <= 38) Then
+						車設定.Direction = -90
+					End if
+					if (My.ID >= 138 And My.ID <= 148 or My.ID >= 257 And My.ID <= 267) Then
+						車設定.Direction = -270
+					End if
+					if (My.ID >= 40 And My.ID <= 49 or My.ID >= 149 And My.ID <= 160) Then
+						車設定.Direction = -90
+					End if
+					if (My.ID >= 50 And My.ID <= 60 or My.ID >= 161 And My.ID <= 171) Then
+						車設定.Direction = -270
+					End if
+					if (My.ID >= 62 And My.ID <= 71 or My.ID >= 173 And My.ID <= 184) Then
+						車設定.Direction = -90
+					End if
+					if (My.ID >= 72 And My.ID <= 82 or My.ID >= 185 And My.ID <= 195) Then
+						車設定.Direction = -270
+					End if
+					if (My.ID >= 84 And My.ID <= 93 or My.ID >= 197 And My.ID <= 208) Then
+						車設定.Direction = -90
+					End if
+					if (My.ID >= 94 And My.ID <= 104 or My.ID >= 209 And My.ID <= 219) Then
+						車設定.Direction = -270
+					End if
+					if (My.ID >= 106 And My.ID <= 115 or My.ID >= 221 And My.ID <= 232) Then
+						車設定.Direction = -90
+					End if
+					if (My.ID >= 116 And My.ID <= 126 or My.ID >= 233 And My.ID <= 243) Then
+						車設定.Direction = -270
+					End if
+					if (My.ID >= 128 And My.ID <= 137 or My.ID >= 245 And My.ID <= 256) Then
+						車設定.Direction = -90
+					End if
+					if (My.ID == 39 or My.ID == 61 or My.ID == 83 or My.ID == 105 or My.ID == 127) Then
+						車設定.Direction = -360
+					End if
+
+				if (My.ID == 172) Then
+					if (車設定.X == 27 And 車設定.Y == 16) Then
+						車設定.Direction = -180
+					else
+						車設定.Direction = -270
+					End if
+				End if
+				if (My.ID == 196) Then
+					if (車設定.X == 27 And 車設定.Y == 13) Then
+						車設定.Direction = -180
+					else
+						車設定.Direction = -270
+					End if
+				End if
+				if (My.ID == 220) Then
+					if (車設定.X == 27 And 車設定.Y == 10) Then
+						車設定.Direction = -180
+					else
+						車設定.Direction = -270
+					End if
+				End if
+				if (My.ID == 244) Then
+					if (車設定.X == 27 And 車設定.Y == 7) Then
+						車設定.Direction = -180
+					else
+						車設定.Direction = -270
+					End if
+				End if
+				if (My.ID == 268) Then
+					if (車設定.X == 27 And 車設定.Y == 4) Then
+						車設定.Direction = -180
+					else
+						車設定.Direction = -270
+					End if
+				End if
+				車設定.speed = 0
+	 			車設定.経過時間 = 車設定.経過時間 + 1
+					if (車設定.経過時間 == 車設定.駐車時間) Then
+						車設定.speed = 1
+				End if
+				End if
+      
+				End if
+}
